@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="dartjstest">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>Flutter DagreJS interop example</title>
+  <link rel="manifest" href="manifest.json">
+
+  <script src="https://cdn.jsdelivr.net/npm/dagre@latest/dist/dagre.min.js"></script>
+
+
+  <script>
+    function calculateLayout(
+
+
+
+    ) {
+      var g = new dagre.graphlib.Graph();
+
+      g.setGraph({});
+
+      let rankdir = myJsRankdir;
+      let nodesep =  myJsNodesep;
+      let ranksep = myJsRanksep;
+      let ranker = myJsRanker;
+
+      g.setDefaultEdgeLabel(function() { return {}; });
+      g.setGraph({
+         ranker: ranker,
+        // align: 'UL',
+        // acyclicer:  'greedy',
+
+        rankdir: rankdir, nodesep: nodesep, ranksep: ranksep }); //
+
+      myJsNodes.forEach(node => {
+
+
+          g.setNode(node.id, { label: node.label, width: node.width, height: node.height });
+
+
+
+      });
+
+      myJsEdges.forEach(edge => {
+        let weight = edge.weight;
+         g.setEdge(edge.source, edge.target, { weight: weight });
+      });
+
+      dagre.layout(g);
+
+      let nodePositions = {};
+      g.nodes().forEach(function(v) {
+        let node = g.node(v);
+        nodePositions[v] = {
+          label: g.node(v).label,
+          x: node.x, y: node.y, width: node.width, height: node.height };
+      });
+
+      let edgePoints = {};
+      g.edges().forEach(function(e) {
+        let edge = g.edge(e);
+        edgePoints[e.v + '->' + e.w] = edge.points;
+      });
+
+       return JSON.stringify({
+        nodes: nodePositions,
+        edges: edgePoints,
+        graph: { width: g.graph().width, height: g.graph().height }
+      });
+    }
+  </script>
+
+
+
+
+</head>
+<body>
+
+  <script src="flutter_bootstrap.js" async></script>
+
+
+
+</body>
+</html>
